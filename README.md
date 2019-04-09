@@ -6,7 +6,6 @@ Files with following suffixes are omitted from the check: "-tests.jar", "-source
  
 Usage:
 ```bash
-java -jar <jardif jar> -DmvnVersion=<version used in the maven build> -DgradleVersion=<version used in the gradle build>
+java -DmvnVersion=<version used in the maven build> -DgradleVersion=<version used in the gradle build> -jar <jardif jar> 
 ```
-
 **WARNING** although written in java, the project relies on bash tools like `find` and `diff`

@@ -1,4 +1,4 @@
-/**
+/*
  * JBoss, Home of Professional Open Source.
  * Copyright 2017 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,7 +52,7 @@ public class JarDif {
     private static final String[] neglected = new String[]{"-tests.jar", "-sources.jar", "-javadoc.jar", "-benchmarks.jar"};
     private static final File workDir = new File(".jardif");
 
-    private static final Boolean verbose = Boolean.valueOf(System.getProperty("verbose", "false"));
+    private static final boolean verbose = Boolean.valueOf(System.getProperty("verbose", "false"));
     public static final Predicate<String> skipNotImportant = name -> Stream.of(neglected).noneMatch(name::endsWith);
 
     private List<String> gradleJars() {
@@ -86,11 +85,11 @@ public class JarDif {
         if (!gradle.isEmpty()) {
             System.err.println("MISSING MAVEN JARS: " + gradle);
         }
-        List<String> missingMaven = new ArrayList<>();
-        missingMaven.removeAll(resultMap.keySet());
-        if (!missingMaven.isEmpty()) {
-            System.err.println("MISSING GRADLE JARS: " + gradle);
-        }
+//        List<Path> missingMaven = new ArrayList<>(gradle);
+//        missingMaven.removeAll(resultMap.keySet());
+//        if (!missingMaven.isEmpty()) {
+//            System.err.println("MISSING GRADLE JARS: " + gradle);
+//        }
 
         return resultMap;
     }
@@ -102,8 +101,7 @@ public class JarDif {
     }
 
     private void analyze() {
-        Map<Path, Path> common = common();
-        common.entrySet().stream().forEach(e -> compare(e.getKey(), e.getValue()));
+        common().forEach(this::compare);
     }
 
     private void compare(Path maven, Path gradle) {
