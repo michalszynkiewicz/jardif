@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,6 +48,8 @@ import static org.jboss.prod.jardif.utils.OSUtils.runCommand;
  * Time: 10:10 AM
  */
 public class JarDif {
+    private static final String MVN_VS_GRADLE = "mvnVsGradle";
+    private static final String DIFF = "diff";
     private static final String mvnVersion = System.getProperty("mvnVersion", "-0.4.9");
     private static final String gradleVersion = System.getProperty("gradleVersion", "-0.1.0-SNAPSHOT");
     private static final String[] neglected = new String[]{"-tests.jar", "-sources.jar", "-javadoc.jar", "-benchmarks.jar"};
@@ -177,14 +180,24 @@ public class JarDif {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length > 1) {
-            throw new IllegalStateException("Run the program in the project directory");
+        if (args.length < 1 || !Arrays.asList(MVN_VS_GRADLE, DIFF).contains(args[0])) {
+            throw new IllegalStateException("Please choose command " + MVN_VS_GRADLE + " or " + DIFF);
         }
-        if (workDir.exists()) {
-            FileUtils.deleteDirectory(workDir);
-        }
-        workDir.mkdirs();
+        if (MVN_VS_GRADLE.equals(args[0])) {
+            if (workDir.exists()) {
+                FileUtils.deleteDirectory(workDir);
+            }
+            workDir.mkdirs();
 
-        new JarDif().analyze();
+            new JarDif().analyze();
+        } else if (DIFF.equals(args[0])){
+            FileUtils.deleteDirectory(workDir);
+            workDir.mkdirs();
+            if (args.length < 3) {
+                throw new IllegalArgumentException("Please provide two jars to compare");
+            }
+            new JarDif().compare(Paths.get(args[1]), Paths.get(args[2]));
+        }
+
     }
 }
